@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForgeMind // Planos de Creación Colectiva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #1a1a2e;
+            --secondary-bg: #16213e;
+            --accent-color: #e94560;
+            --text-color: #e0e0e0;
+            --input-bg: #0f3460;
+            --button-bg: #0f3460;
+            --button-hover-bg: #e94560;
+            --border-color: #0f3460;
+            --card-bg: #0f3460;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: var(--secondary-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .auth-section {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .auth-section button {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .auth-section button:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .cta-buttons .btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+        }
+
+        .cta-buttons .btn:hover {
+            background-color: #c7364e;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            text-align: left;
+        }
+
+        .card h3 {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .card .btn-purchase {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        .card .btn-purchase:hover {
+            background-color: #c7364e;
+        }
+
+        footer {
+            background-color: var(--secondary-bg);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-bg);
+            margin: auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            text-align: left;
+        }
+
+        .close-button {
+            color: var(--text-color);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--accent-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="password"],
+        .modal-content select {
+            width: calc(100% - 20px);
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .modal-content button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: #c7364e;
+        }
+
+        .modal-content .toggle-form {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .modal-content .toggle-form a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .modal-content .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .auth-section {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .card {
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .hero-section p {
+                font-size: 0.9rem;
+            }
+
+            .auth-section button {
+                padding: 0.6rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">
+            <img src="https://www.svgrepo.com/show/508920/wrench.svg" alt="ForgeMind Logo">
+            ForgeMind
+        </a>
+        <div class="auth-section">
+            <button id="showRegisterModal">Registrarse</button>
+            <button id="showLoginModal">Ingresar</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h1>Planos de Creación Colectiva</h1>
+            <p>Descubre y construye proyectos innovadores. Desde mesas flotantes hasta dispositivos electrónicos, ForgeMind es tu comunidad para la ingeniería creativa.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn">Explorar Proyectos</a>
+                <a href="#" class="btn">Unirse a la Comunidad</a>
+            </div>
+        </section>
+
+        <section class="card-container">
+            <div class="card">
+                <h3>Mesa Flotante de Ingeniería</h3>
+                <p>Estructura suspendida por tensión física. Incluye video tutorial y planos detallados para su construcción.</p>
+                <a href="#" class="btn-purchase" onclick="comprarGuia('kit_express', 'Kit de Componentes', 20)">🔌 Adquirir Kit de Componentes ($20 MXN)</a>
+                <a href="#" class="btn-purchase" onclick="comprarGuia('video_basico', 'Video y Pasos', 80)">⚡ Desbloquear Video y Pasos ($80 MXN)</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2026 ForgeMind. Todos los derechos reservados.
+    </footer>
+
+    <!-- Modales de Registro e Ingreso -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Registro</h2>
+            <form id="registerForm">
+                <label for="regUsername">Usuario:</label>
+                <input type="text" id="regUsername" name="username" placeholder="Tu nombre de usuario" required>
+                <label for="regPassword">Clave:</label>
+                <input type="password" id="regPassword" name="password" placeholder="Tu contraseña" required>
+                <label for="regPlan">Plan:</label>
+                <select id="regPlan" name="plan">
+                    <option value="express">Express ($20)</option>
+                    <option value="maker">Maker ($80)</option>
+                    <option value="developer">Developer ($150)</option>
+                </select>
+                <button type="submit">Registrarse</button>
+            </form>
+            <p class="toggle-form">¿Ya tienes cuenta? <a href="#" id="showLoginFromRegister">Ingresar</a></p>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Ingreso</h2>
+            <form id="loginForm">
+                <label for="logUsername">Usuario:</label>
+                <input type="text" id="logUsername" name="username" placeholder="Tu nombre de usuario" required>
+                <label for="logPassword">Clave:</label>
+                <input type="password" id="logPassword" name="password" placeholder="Tu contraseña" required>
+                <button type="submit">Ingresar</button>
+            </form>
+            <p class="toggle-form">¿No tienes cuenta? <a href="#" id="showRegisterFromLogin">Registrarse</a></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
