@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 3000;
 const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_TOKEN });
 
 
-app.use(cors());
+app.use(cors({ origin: '*' }));
+
 app.use(bodyParser.json());
 app.use(express.static('.')); // Sirve tus archivos index.html y script.js
 
