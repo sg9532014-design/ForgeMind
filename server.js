@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path'); // Asegura las rutas en Render
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 const app = express();
@@ -11,9 +12,16 @@ const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_TOKE
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(express.static('.'));
+
+// Sirve correctamente los archivos visuales en la nube de Render
+app.use(express.static(path.join(__dirname, '.')));
 
 let usuarios = [];
+
+// Ruta para cargar la página principal de inmediato
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/api/registrar', (req, res) => {
     const { username, password, plan } = req.body;
