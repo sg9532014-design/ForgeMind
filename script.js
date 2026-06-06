@@ -6,6 +6,9 @@ const showLoginModalBtn = document.getElementById("showLoginModal");
 const showLoginFromRegisterLink = document.getElementById("showLoginFromRegister");
 const showRegisterFromLoginLink = document.getElementById("showRegisterFromLogin");
 
+// URL de tu Backend en Render
+const API_BASE_URL = "https://forgemind-backend.onrender.com";
+
 function closeModal(modal) { if (modal) modal.style.display = "none"; }
 function openModal(modal) { if (modal) modal.style.display = "flex"; }
 
@@ -43,7 +46,7 @@ if (registerForm) {
         const plan = document.getElementById("regPlan").value;
 
         try {
-            const response = await fetch("https://onrender.com", {
+            const response = await fetch(`${API_BASE_URL}/api/registrar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password, plan })
@@ -58,7 +61,8 @@ if (registerForm) {
                 alert("Error en el registro: " + (data.message || "Hubo un problema."));
             }
         } catch (error) {
-            alert("Error de conexión con el servidor.");
+            console.error("Error:", error);
+            alert("Error de conexión con el servidor. Asegúrate de que el backend esté activo.");
         }
     });
 }
@@ -72,7 +76,7 @@ if (loginForm) {
         const password = document.getElementById("logPassword").value;
 
         try {
-            const response = await fetch("https://onrender.com", {
+            const response = await fetch(`${API_BASE_URL}/api/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
@@ -87,6 +91,7 @@ if (loginForm) {
                 alert("Error en el ingreso: " + (data.message || "Credenciales incorrectas."));
             }
         } catch (error) {
+            console.error("Error:", error);
             alert("Error de conexión con el servidor.");
         }
     });
@@ -96,7 +101,7 @@ if (loginForm) {
 async function comprarGuia(idGuia, nombreGuia, precioGuia) {
     try {
         const usuarioLogueado = localStorage.getItem("usuario_forgemind") || "Invitado";
-        const respuesta = await fetch("https://onrender.com", {
+        const respuesta = await fetch(`${API_BASE_URL}/api/crear-pago`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -111,9 +116,10 @@ async function comprarGuia(idGuia, nombreGuia, precioGuia) {
         if (datos.init_point) {
             window.location.href = datos.init_point;
         } else {
-            alert("⚠️ No se pudo generar el enlace de pago.");
+            alert("⚠️ No se pudo generar el enlace de pago: " + (datos.message || "Error desconocido"));
         }
     } catch (error) {
+        console.error("Error:", error);
         alert("❌ Error de conexión con la pasarela de cobros.");
     }
 }
