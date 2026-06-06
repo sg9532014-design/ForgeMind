@@ -1,210 +1,127 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ForgeMind // Planos de Creación Colectiva</title>
-    <style>
-        /* ESTILOS ORIGINALES DE FORGEMIND */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #0d0e15; color: #ffffff; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #161722; border-bottom: 1px solid #232533; }
-        .logo { display: flex; align-items: center; color: #ffffff; text-decoration: none; font-weight: bold; gap: 10px; font-size: 1.2rem; }
-        .logo img { width: 28px; height: 28px; filter: invert(35%) sepia(85%) saturate(1200%) hue-rotate(160deg); }
-        .auth-section button { background: transparent; border: 1px solid #00bcd4; padding: 8px 18px; color: #00bcd4; cursor: pointer; border-radius: 4px; font-weight: bold; margin-left: 10px; transition: all 0.3s; }
-        .auth-section button:hover { background: #00bcd4; color: #161722; }
-        .hero-section { text-align: center; padding: 100px 20px; background: radial-gradient(circle at center, #1b1d30 0%, #0d0e15 100%); }
-        .hero-section h1 { font-size: 2.8rem; margin-bottom: 20px; color: #ffffff; }
-        .hero-section p { font-size: 1.2rem; color: #8f92a1; max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6; }
-        .cta-buttons { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .btn { display: inline-block; background: #00bcd4; color: #0d0e15; padding: 12px 28px; text-decoration: none; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; font-size: 1rem; transition: background 0.3s; }
-        .btn:hover { background: #00e5ff; }
+// ========== CONFIGURACIÓN ==========
+const API_URL = 'https://forgemind-backend.onrender.com';
+
+// ========== FUNCIONES DE MODALES ==========
+function abrirModal(modalId) {
+    document.getElementById(modalId).style.display = 'flex';
+}
+
+function cerrarModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// ========== REGISTRO ==========
+async function registrarUsuario() {
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const plan = document.getElementById('reg-plan').value;
+    
+    if (!username || !password) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/api/registrar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password, plan })
+        });
         
-        /* MODALES */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 6, 10, 0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #161722; padding: 35px; border-radius: 8px; width: 90%; max-width: 400px; position: relative; border: 1px solid #232533; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .close-button { position: absolute; top: 12px; right: 18px; font-size: 26px; cursor: pointer; color: #8f92a1; }
-        .close-button:hover { color: #ffffff; }
-        .modal h2 { margin-top: 0; color: #ffffff; margin-bottom: 25px; font-size: 1.6rem; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #8f92a1; font-size: 0.9rem; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background: #0d0e15; border: 1px solid #232533; border-radius: 4px; box-sizing: border-box; color: #ffffff; font-size: 1rem; }
-        .form-group input:focus, .form-group select:focus { border-color: #00bcd4; outline: none; }
-        .form-group button { width: 100%; padding: 12px; background: #00bcd4; color: #0d0e15; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .form-group button:hover { background: #00e5ff; }
-    </style>
-</head>
-<body>
-    <header>
-        <a href="#" class="logo">
-            <img src="https://svgrepo.com" alt="ForgeMind Logo">
-            ForgeMind
-        </a>
-        <div class="auth-section">
-            <button id="showRegisterModal">Registrarse</button>
-            <button id="showLoginModal">Ingresar</button>
-        </div>
-    </header>
-
-    <main>
-        <section class="hero-section">
-            <h1>Planos de Creación Colectiva</h1>
-            <p>Descubre y construye proyectos innovadores. Desde mesas flotantes hasta dispositivos electrónicos, ForgeMind es tu comunidad para la ingeniería creativa.</p>
-            <div class="cta-buttons">
-                <button class="btn" onclick="comprarGuia('mesa_01', 'Mesa Flotante de Ingeniería', '20')">🔌 Adquirir Kit de Componentes ($20 MXN)</button>
-            </div>
-        </section>
-    </main>
-
-    <!-- Modal de Registro -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal(document.getElementById('registerModal'))">&times;</span>
-            <h2>Registro</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="regUsername">Usuario:</label>
-                    <input type="text" id="regUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="regPassword">Clave:</label>
-                    <input type="password" id="regPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="regPlan">Plan:</label>
-                    <select id="regPlan">
-                        <option value="Express">Express ($20)</option>
-                        <option value="Maker">Maker ($80)</option>
-                        <option value="Developer">Developer ($150)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button type="submit">Registrarse</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de Ingreso -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal(document.getElementById('loginModal'))">&times;</span>
-            <h2>Ingreso</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="logUsername">Usuario:</label>
-                    <input type="text" id="logUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="logPassword">Clave:</label>
-                    <input type="password" id="logPassword" required>
-                </div>
-                <div class="form-group">
-                    <button type="submit">Ingresar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // PROGRAMACIÓN DE MODALES Y BOTONES
-        const registerModal = document.getElementById("registerModal");
-        const loginModal = document.getElementById("loginModal");
-        const showRegisterModalBtn = document.getElementById("showRegisterModal");
-        const showLoginModalBtn = document.getElementById("showLoginModal");
-
-        function closeModal(modal) { if (modal) modal.style.display = "none"; }
-        function openModal(modal) { if (modal) modal.style.display = "flex"; }
-
-        if (showRegisterModalBtn) showRegisterModalBtn.onclick = () => openModal(registerModal);
-        if (showLoginModalBtn) showLoginModalBtn.onclick = () => openModal(loginModal);
-
-        window.onclick = (event) => {
-            if (event.target == registerModal) closeModal(registerModal);
-            if (event.target == loginModal) closeModal(loginModal);
-        };
-
-        // ENTRADA AL SERVIDOR DE REGISTRO
-        const registerForm = document.getElementById("registerForm");
-        if (registerForm) {
-            registerForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const username = document.getElementById("regUsername").value;
-                const password = document.getElementById("regPassword").value;
-                const plan = document.getElementById("regPlan").value;
-
-                try {
-                    const response = await fetch("https://onrender.com", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ username, password, plan })
-                    });
-
-                    const data = await response.json();
-                    if (response.ok) {
-                        alert("Registro exitoso: " + data.message);
-                        localStorage.setItem("usuario_forgemind", username);
-                        closeModal(registerModal);
-                    } else {
-                        alert("Error: " + (data.message || "Hubo un problema."));
-                    }
-                } catch (error) {
-                    alert("Error de conexión con el servidor.");
-                }
-            });
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+            cerrarModal('modal-registro');
+            abrirModal('modal-login');
+        } else {
+            alert('Error: ' + data.message);
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión. Intenta nuevamente.');
+    }
+}
 
-        // ENTRADA AL SERVIDOR DE LOGIN
-        const loginForm = document.getElementById("loginForm");
-        if (loginForm) {
-            loginForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const username = document.getElementById("logUsername").value;
-                const password = document.getElementById("logPassword").value;
-
-                try {
-                    const response = await fetch("https://onrender.com", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ username, password })
-                    });
-
-                    const data = await response.json();
-                    if (response.ok) {
-                        alert("Ingreso exitoso: " + data.message);
-                        localStorage.setItem("usuario_forgemind", username);
-                        closeModal(loginModal);
-                    } else {
-                        alert("Error: " + (data.message || "Credenciales incorrectas."));
-                    }
-                } catch (error) {
-                    alert("Error de conexión con el servidor.");
-                }
-            });
+// ========== LOGIN ==========
+async function iniciarSesion() {
+    const username = document.getElementById('log-username').value.trim();
+    const password = document.getElementById('log-password').value;
+    
+    if (!username || !password) {
+        alert('Por favor completa todos los campos');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('¡Bienvenido ' + username + '!');
+            localStorage.setItem('usuario', JSON.stringify(data.user));
+            cerrarModal('modal-login');
+            // Actualizar UI si es necesario
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión. Intenta nuevamente.');
+    }
+}
 
-                // ENTRADA DIRECTA A MERCADO PAGO
-        async function comprarGuia(idGuia, nombreGuia, precioGuia) {
-            try {
-                const usuarioLogueado = localStorage.getItem("usuario_forgemind") || "Invitado";
-                const respuesta = await fetch("https://onrender.com", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        id_guia: idGuia,
-                        nombre_guia: nombreGuia,
-                        precio: precioGuia,
-                        usuario: usuarioLogueado
-                    })
-                });
-
-                const datos = await respuesta.json();
-                if (datos.init_point) {
-                    window.location.href = datos.init_point;
-                } else {
-                    alert("⚠️ No se pudo generar el enlace de pago.");
-                }
-            } catch (error) {
-                alert("❌ Error de conexión con la pasarela.");
-            }
+// ========== PAGO ==========
+async function procesarPago(idGuia, nombreGuia, precio) {
+    const usuarioData = localStorage.getItem('usuario');
+    
+    if (!usuarioData) {
+        alert('Debes iniciar sesión primero');
+        abrirModal('modal-login');
+        return;
+    }
+    
+    const usuario = JSON.parse(usuarioData);
+    
+    try {
+        const response = await fetch(`${API_URL}/api/crear-pago`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                id_guia: idGuia,
+                nombre_guia: nombreGuia,
+                precio: precio,
+                usuario: usuario.username
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.init_point) {
+            window.location.href = data.init_point;
+        } else {
+            alert('Error al procesar el pago: ' + (data.message || 'Error desconocido'));
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión. Intenta nuevamente.');
+    }
+}
 
+// ========== CERRAR SESIÓN ==========
+function cerrarSesion() {
+    localStorage.removeItem('usuario');
+    location.reload();
+}
