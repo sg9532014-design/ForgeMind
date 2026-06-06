@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vision Studio - ForgeMind</title>
+    <title>ForgeMind</title>
     <style>
         /* ESTILOS GLOBALES */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -50,9 +50,8 @@
 
     <!-- BARRA DE NAVEGACIÓN -->
     <header>
-        <h1>Vision Studio</h1>
+        <h1>ForgeMind</h1>
         <div class="nav-buttons" id="auth-buttons">
-            <!-- Los botones cambiarán dinámicamente según la sesión -->
             <button onclick="abrirModal('modal-login')">Iniciar Sesión</button>
             <button class="secondary" onclick="abrirModal('modal-registro')">Registrarse</button>
         </div>
@@ -65,7 +64,7 @@
             <p>Adquiere nuestras guías técnicas especializadas asistidas por IA para optimizar tus procesos industriales.</p>
         </section>
 
-        <!-- CATÁLOGO DE COMPRA -->
+        <!-- CATÁLOGO DE COMPRA CON TUS PRECIOS DE $20 Y $80 -->
         <div class="grid">
             <div class="card">
                 <div>
@@ -73,8 +72,8 @@
                     <p>Optimiza la detección de anomalías visuales en maquinaria pesada mediante flujos automatizados.</p>
                 </div>
                 <div>
-                    <div class="price">$150 MXN</div>
-                    <button onclick="procesarPago('guia_video', 'Guía de Análisis de Video', 150)">Comprar Guía</button>
+                    <div class="price">$20 MXN</div>
+                    <button onclick="procesarPago('guia_video', 'Guía de Análisis de Video', 20)">Comprar Guía</button>
                 </div>
             </div>
 
@@ -84,8 +83,8 @@
                     <p>Planificación estratégica y algoritmos predictivos para evitar paros críticos en líneas de producción.</p>
                 </div>
                 <div>
-                    <div class="price">$250 MXN</div>
-                    <button onclick="procesarPago('guia_mant', 'Guía de Mantenimiento Avanzado', 250)">Comprar Guía</button>
+                    <div class="price">$80 MXN</div>
+                    <button onclick="procesarPago('guia_mant', 'Guía de Mantenimiento Avanzado', 80)">Comprar Guía</button>
                 </div>
             </div>
         </div>
@@ -146,7 +145,62 @@
         });
     </script>
 
-    <!-- VINCULACIÓN CON TU ARCHIVO DE LÓGICA DE PROGRAMACIÓN -->
-    <script src="script.js"></script>
-</body>
-</html>
+    <!-- PROGRAMACIÓN INTEGRADA AL 100% PARA TUS BOTONES -->
+    <script>
+        // ========== CONFIGURACIÓN ==========
+        const API_URL = 'https://onrender.com';
+
+        // ========== FUNCIONES DE MODALES ==========
+        function abrirModal(modalId) { 
+            document.getElementById(modalId).style.display = 'flex'; 
+        }
+        
+        function cerrarModal(modalId) { 
+            document.getElementById(modalId).style.display = 'none'; 
+        }
+
+        // ========== REGISTRO ==========
+        async function registrarUsuario() {
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const plan = document.getElementById('reg-plan').value;
+            if (!username || !password) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/registrar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, plan })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('¡Registro exitoso! Ya puedes iniciar sesión.');
+                    cerrarModal('modal-registro');
+                    abrirModal('modal-login');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión. Intenta nuevamente.');
+            }
+        }
+
+        // ========== LOGIN ==========
+        async function iniciarSesion() {
+            const username = document.getElementById('log-username').value.trim();
+            const password = document.getElementById('log-password').value;
+            if (!username || !password) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (data.success) {
