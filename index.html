@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ForgeMind</title>
     <style>
+        /* ESTILOS VISUALES */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #0f172a; color: #f8fafc; display: flex; flex-direction: column; min-height: 100vh; }
         header { background-color: #1e293b; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3b82f6; }
         h1 { color: #3b82f6; font-size: 1.8rem; }
         .nav-buttons { display: flex; gap: 1rem; }
-        button { background-color: #3b82f6; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button { background-color: #3b82f6; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
         button:hover { background-color: #2563eb; }
         button.secondary { background-color: #475569; }
+        button.secondary:hover { background-color: #334155; }
         button.danger { background-color: #ef4444; }
         main { flex: 1; padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; text-align: center; }
         .hero { margin-bottom: 4rem; }
@@ -20,17 +22,20 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
         .card { background-color: #1e293b; padding: 2rem; border-radius: 12px; border: 1px solid #334155; text-align: left; display: flex; flex-direction: column; justify-content: space-between; }
         .price { font-size: 1.5rem; color: #10b981; font-weight: bold; margin-bottom: 1rem; }
+        
+        /* CORRECCIÓN ESTRICTA DE MODALES */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background-color: #1e293b; padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 400px; border: 1px solid #3b82f6; position: relative; }
+        .modal-content { background-color: #1e293b; padding: 2.5rem; border-radius: 12px; width: 100%; max-width: 400px; border: 1px solid #3b82f6; position: relative; text-align: left; }
         .close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
         .form-group { margin-bottom: 1.2rem; }
         .form-group label { display: block; margin-bottom: 0.4rem; color: #94a3b8; font-size: 0.9rem; }
-        .form-group input, .form-group select { width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #334155; background-color: #0f172a; color: white; }
+        .form-group input, .form-group select { width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #334155; background-color: #0f172a; color: white; font-size: 1rem; }
         .modal-content button { width: 100%; margin-top: 1rem; padding: 0.8rem; }
     </style>
 </head>
 <body>
 
+    <!-- BARRA DE NAVEGACIÓN -->
     <header>
         <h1>ForgeMind</h1>
         <div class="nav-buttons" id="auth-buttons">
@@ -39,12 +44,14 @@
         </div>
     </header>
 
+    <!-- CUERPO DE LA PÁGINA -->
     <main>
         <section class="hero">
             <h2>Mantenimiento Preventivo y Análisis de Maquinaria</h2>
             <p>Adquiere nuestras guías técnicas especializadas asistidas por IA para optimizar tus procesos industriales.</p>
         </section>
 
+        <!-- TARJETAS COMERCIALES ($20 Y $80) -->
         <div class="grid">
             <div class="card">
                 <div>
@@ -70,82 +77,131 @@
         </div>
     </main>
 
+    <!-- MODAL DE REGISTRO CON IDs VERIFICADOS -->
     <div class="modal" id="modal-registro">
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modal-registro')">&times;</button>
-            <h2>Crear Cuenta</h2><br>
-            <div class="form-group"><label>Usuario</label><input type="text" id="reg-username"></div>
-            <div class="form-group"><label>Contraseña</label><input type="password" id="reg-password"></div>
-            <div class="form-group"><label>Plan</label><select id="reg-plan"><option value="basico">Básico</option><option value="premium">Premium</option></select></div>
+            <h2 style="margin-bottom: 1rem;">Crear Cuenta</h2>
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" id="reg-username" placeholder="Tu usuario">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="reg-password" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label>Plan</label>
+                <select id="reg-plan">
+                    <option value="basico">Básico</option>
+                    <option value="premium">Premium</option>
+                </select>
+            </div>
             <button onclick="registrarUsuario()">Registrarse</button>
         </div>
     </div>
 
+    <!-- MODAL DE LOGIN CON IDs VERIFICADOS -->
     <div class="modal" id="modal-login">
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modal-login')">&times;</button>
-            <h2>Iniciar Sesión</h2><br>
-            <div class="form-group"><label>Usuario</label><input type="text" id="log-username"></div>
-            <div class="form-group"><label>Contraseña</label><input type="password" id="log-password"></div>
+            <h2 style="margin-bottom: 1rem;">Iniciar Sesión</h2>
+            <div class="form-group">
+                <label>Usuario</label>
+                <input type="text" id="log-username" placeholder="Tu usuario">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="log-password" placeholder="••••••••">
+            </div>
             <button onclick="iniciarSesion()">Ingresar</button>
         </div>
     </div>
 
+    <!-- LÓGICA DE PROGRAMACIÓN GARANTIZADA -->
     <script>
-        const API_URL = https://forgemind-backend.onrender.com
+        const API_URL = 'https://onrender.com';
 
-        function abrirModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
-        function cerrarModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        // Control de ventanas flotantes
+        function abrirModal(modalId) { 
+            const targetModal = document.getElementById(modalId);
+            if (targetModal) targetModal.style.display = 'flex'; 
+        }
+        function cerrarModal(modalId) { 
+            const targetModal = document.getElementById(modalId);
+            if (targetModal) targetModal.style.display = 'none'; 
+        }
 
+        // Carga de estado de sesión
         document.addEventListener("DOMContentLoaded", () => {
             const usuarioData = localStorage.getItem('usuario');
             if (usuarioData) {
                 const usuario = JSON.parse(usuarioData);
-                document.getElementById('auth-buttons').innerHTML = `
-                    <span style="margin-right:1rem;color:#10b981;font-weight:bold;">👋 Hola, ${usuario.username}</span>
-                    <button class="danger" onclick="cerrarSesion()">Cerrar Sesión</button>
-                `;
+                const contenedorBotones = document.getElementById('auth-buttons');
+                if (contenedorBotones) {
+                    contenedorBotones.innerHTML = `
+                        <span style="margin-right:1rem; color:#10b981; font-weight:bold; align-self:center;">👋 Hola, ${usuario.username}</span>
+                        <button class="danger" onclick="cerrarSesion()">Cerrar Sesión</button>
+                    `;
+                }
             }
         });
 
+        // Registro de usuarios
         async function registrarUsuario() {
-            const username = document.getElementById('reg-username').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const plan = document.getElementById('reg-plan').value;
-            if (!username || !password) return alert('Completa los campos');
+            const userEl = document.getElementById('reg-username');
+            const passEl = document.getElementById('reg-password');
+            const planEl = document.getElementById('reg-plan');
+            
+            if (!userEl || !passEl) return;
+            const username = userEl.value.trim();
+            const password = passEl.value;
+            const plan = planEl ? planEl.value : 'basico';
+
+            if (!username || !password) return alert('Por favor, completa todos los campos');
+            
             try {
-                const r = await fetch(`${API_URL}/api/registrar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, plan }) });
+                const r = await fetch(`${API_URL}/api/registrar`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ username, password, plan }) 
+                });
                 const d = await r.json();
-                if (d.success) { alert('¡Registro exitoso!'); cerrarModal('modal-registro'); abrirModal('modal-login'); } 
-                else { alert('Error: ' + d.message); }
-            } catch (e) { alert('Error de conexión'); }
+                if (d.success) { 
+                    alert('¡Registro exitoso! Ahora inicia sesión.'); 
+                    cerrarModal('modal-registro'); 
+                    abrirModal('modal-login'); 
+                } else { 
+                    alert('Error: ' + d.message); 
+                }
+            } catch (e) { 
+                alert('Error de conexión con el servidor backend'); 
+            }
         }
 
+        // Inicio de sesión
         async function iniciarSesion() {
-            const username = document.getElementById('log-username').value.trim();
-            const password = document.getElementById('log-password').value;
-            if (!username || !password) return alert('Completa los campos');
-            try {
-                const r = await fetch(`${API_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
-                const d = await r.json();
-                if (d.success) { alert('¡Bienvenido!'); localStorage.setItem('usuario', JSON.stringify(d.user)); location.reload(); } 
-                else { alert('Error: ' + d.message); }
-            } catch (e) { alert('Error de conexión'); }
-        }
+            const userEl = document.getElementById('log-username');
+            const passEl = document.getElementById('log-password');
+            
+            if (!userEl || !passEl) return;
+            const username = userEl.value.trim();
+            const password = passEl.value;
 
-        async function procesarPago(idGuia, nombreGuia, precio) {
-            const usuarioData = localStorage.getItem('usuario');
-            if (!usuarioData) { alert('Inicia sesión primero'); abrirModal('modal-login'); return; }
-            const usuario = JSON.parse(usuarioData);
+            if (!username || !password) return alert('Por favor, completa todos los campos');
+            
             try {
-                const r = await fetch(`${API_URL}/api/crear-pago`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id_guia: idGuia, nombre_guia: nombreGuia, precio, usuario: usuario.username }) });
+                const r = await fetch(`${API_URL}/api/login`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ username, password }) 
+                });
                 const d = await r.json();
-                if (d.success && d.init_point) { window.location.href = d.init_point; } 
-                else { alert('Error al generar pago'); }
-            } catch (e) { alert('Error de conexión'); }
-        }
-
-        function cerrarSesion() { localStorage.removeItem('usuario'); location.reload(); }
-    </script>
-</body>
-</html>
+                if (d.success) { 
+                    alert('¡Bienvenido a ForgeMind!'); 
+                    localStorage.setItem('usuario', JSON.stringify(d.user)); 
+                    location.reload(); 
+                } else { 
+                    alert('Error: ' + d.message); 
+                }
+            } catch (e) { 
