@@ -12,9 +12,10 @@ const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_TOKE
 
 
 app.use(cors({ origin: '*' }));
-
 app.use(bodyParser.json());
+app.use(express.json()); // 👈 AGREGA ESTA LÍNEA EXACTA AQUÍ
 app.use(express.static('.')); // Sirve tus archivos index.html y script.js
+
 
 // --- BASE DE DATOS TEMPORAL (EN MEMORIA) ---
 // Nota: En producción, usa una base de datos real como MongoDB o PostgreSQL
