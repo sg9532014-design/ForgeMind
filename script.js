@@ -1,4 +1,4 @@
-// JavaScript para manejar los modales y el registro/login
+// Manejo de Modales
 const registerModal = document.getElementById("registerModal");
 const loginModal = document.getElementById("loginModal");
 const showRegisterModalBtn = document.getElementById("showRegisterModal");
@@ -6,13 +6,8 @@ const showLoginModalBtn = document.getElementById("showLoginModal");
 const showLoginFromRegisterLink = document.getElementById("showLoginFromRegister");
 const showRegisterFromLoginLink = document.getElementById("showRegisterFromLogin");
 
-function closeModal(modal) {
-    if (modal) modal.style.display = "none";
-}
-
-function openModal(modal) {
-    if (modal) modal.style.display = "flex";
-}
+function closeModal(modal) { if (modal) modal.style.display = "none"; }
+function openModal(modal) { if (modal) modal.style.display = "flex"; }
 
 if (showRegisterModalBtn) showRegisterModalBtn.onclick = () => openModal(registerModal);
 if (showLoginModalBtn) showLoginModalBtn.onclick = () => openModal(loginModal);
@@ -22,31 +17,23 @@ document.querySelectorAll(".close-button").forEach(button => {
 });
 
 window.onclick = (event) => {
-    if (event.target == registerModal) {
-        closeModal(registerModal);
-    }
-    if (event.target == loginModal) {
-        closeModal(loginModal);
-    }
+    if (event.target == registerModal) closeModal(registerModal);
+    if (event.target == loginModal) closeModal(loginModal);
 };
 
 if (showLoginFromRegisterLink) {
     showLoginFromRegisterLink.onclick = (e) => {
-        e.preventDefault();
-        closeModal(registerModal);
-        openModal(loginModal);
+        e.preventDefault(); closeModal(registerModal); openModal(loginModal);
     };
 }
 
 if (showRegisterFromLoginLink) {
     showRegisterFromLoginLink.onclick = (e) => {
-        e.preventDefault();
-        closeModal(loginModal);
-        openModal(registerModal);
+        e.preventDefault(); closeModal(loginModal); openModal(registerModal);
     };
 }
 
-// Funciones de registro y login con AJAX
+// Registro de Usuarios
 const registerForm = document.getElementById("registerForm");
 if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
@@ -57,16 +44,12 @@ if (registerForm) {
 
         try {
             const response = await fetch("https://onrender.com", {
-
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password, plan })
             });
 
             const data = await response.json();
-
             if (response.ok) {
                 alert("Registro exitoso: " + data.message);
                 localStorage.setItem("usuario_forgemind", username);
@@ -75,12 +58,12 @@ if (registerForm) {
                 alert("Error en el registro: " + (data.message || "Hubo un problema."));
             }
         } catch (error) {
-            console.error("Error al registrar:", error);
             alert("Error de conexión con el servidor.");
         }
     });
 }
 
+// Inicio de Sesión
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
@@ -90,16 +73,12 @@ if (loginForm) {
 
         try {
             const response = await fetch("https://onrender.com", {
-
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
             });
 
             const data = await response.json();
-
             if (response.ok) {
                 alert("Ingreso exitoso: " + data.message);
                 localStorage.setItem("usuario_forgemind", username);
@@ -108,23 +87,18 @@ if (loginForm) {
                 alert("Error en el ingreso: " + (data.message || "Credenciales incorrectas."));
             }
         } catch (error) {
-            console.error("Error al ingresar:", error);
             alert("Error de conexión con el servidor.");
         }
     });
 }
 
-// Función comprarGuia
+// Pasarela de Pagos Mercado Pago
 async function comprarGuia(idGuia, nombreGuia, precioGuia) {
     try {
         const usuarioLogueado = localStorage.getItem("usuario_forgemind") || "Invitado";
-        
         const respuesta = await fetch("https://onrender.com", {
-
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 id_guia: idGuia,
                 nombre_guia: nombreGuia,
@@ -134,14 +108,12 @@ async function comprarGuia(idGuia, nombreGuia, precioGuia) {
         });
 
         const datos = await respuesta.json();
-
         if (datos.init_point) {
             window.location.href = datos.init_point;
         } else {
-            alert("⚠️ No se pudo generar el enlace de pago de Mercado Pago.");
+            alert("⚠️ No se pudo generar el enlace de pago.");
         }
     } catch (error) {
-        console.error("Error al procesar pago:", error);
         alert("❌ Error de conexión con la pasarela de cobros.");
     }
 }
