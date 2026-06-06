@@ -56,7 +56,8 @@ if (registerForm) {
         const plan = document.getElementById("regPlan").value;
 
         try {
-            const response = await fetch("/api/registrar", {
+            const response = await fetch("https://onrender.com", {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -88,7 +89,8 @@ if (loginForm) {
         const password = document.getElementById("logPassword").value;
 
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetch("https://onrender.com", {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -117,7 +119,8 @@ async function comprarGuia(idGuia, nombreGuia, precioGuia) {
     try {
         const usuarioLogueado = localStorage.getItem("usuario_forgemind") || "Invitado";
         
-        const respuesta = await fetch("/api/crear-pago", {
+        const respuesta = await fetch("https://onrender.com", {
+
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
