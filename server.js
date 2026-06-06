@@ -6,25 +6,49 @@ const { MercadoPagoConfig, Preference } = require('mercadopago');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// Render asigna un puerto dinámico de forma estricta
+const PORT = process.env.PORT || 10000; 
 
 const mpAccessToken = process.env.MERCADOPAGO_TOKEN;
 const client = new MercadoPagoConfig({ accessToken: mpAccessToken });
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://forgemind-lf3.onrender.com";
 
+// Configuración de CORS total para evitar bloqueos con el frontend
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '.')));
 
+// Sistema seguro en memoria para evitar bloqueos de escritura en Render
 const USERS_FILE = path.join(__dirname, 'usuarios.json');
 let usuarios = [];
+
 if (fs.existsSync(USERS_FILE)) {
-    try { usuarios = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } 
-    catch (e) { usuarios = []; }
+    try { 
+        usuarios = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); 
+    } catch (e) { 
+        console.error('Error al leer usuarios.json inicial:', e);
+        usuarios = []; 
+    }
 }
+
 function guardarUsuarios() {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(usuarios, null, 2));
+    try {
+        // Intentar guardar, pero envolver en un bloque seguro para que Render no tire el servidor
+        fs.writeFileSync(USERS_FILE, JSON.stringify(usuarios, null, 2));
+    } catch (e) {
+        console.error('Render bloqueó la escritura en disco, los datos se mantienen en memoria:', e);
+    }
 }
+
+// RUTA DE DIAGNÓSTICO (Responde de inmediato para el Health Check de Render)
+app.get('/api/diagnostico', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        instancia: 'ForgeMind Backend',
+        mpTokenConfigurado: !!mpAccessToken,
+        usuariosRegistrados: usuarios.length
+    });
+});
 
 // REGISTRO
 app.post('/api/registrar', async (req, res) => {
@@ -83,15 +107,6 @@ app.post('/api/crear-pago', async (req, res) => {
     }
 });
 
-// DIAGNÓSTICO
-app.get('/api/diagnostico', (req, res) => {
-    res.json({
-        status: 'OK',
-        mpTokenConfigurado: !!mpAccessToken,
-        usuariosRegistrados: usuarios.length
-    });
-});
-
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor ForgeMind corriendo en puerto ${PORT}`);
 });
