@@ -77,7 +77,7 @@
         </div>
     </main>
 
-    <!-- MODAL DE REGISTRO CON IDs VERIFICADOS -->
+    <!-- MODAL DE REGISTRO -->
     <div class="modal" id="modal-registro">
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modal-registro')">&times;</button>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE LOGIN CON IDs VERIFICADOS -->
+    <!-- MODAL DE LOGIN -->
     <div class="modal" id="modal-login">
         <div class="modal-content">
             <button class="close-btn" onclick="cerrarModal('modal-login')">&times;</button>
@@ -118,7 +118,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE PROGRAMACIÓN GARANTIZADA -->
+    <!-- LÓGICA DE PROGRAMACIÓN JAVASCRIPT COMPLETAMENTE INTEGRADA -->
     <script>
         const API_URL = 'https://onrender.com';
 
@@ -203,5 +203,11 @@
                     location.reload(); 
                 } else { 
                     alert('Error: ' + d.message); 
-                }
-            } catch (e) { 
+}} catch (e) {alert('Error de conexión con el servidor backend');}}// Enlace comercial con Mercado Pagoasync function procesarPago(idGuia, nombreGuia, precio) {const usuarioData = localStorage.getItem('usuario');if (!usuarioData) {alert('Debes iniciar sesión para realizar una compra');abrirModal('modal-login');return;}const usuario = JSON.parse(usuarioData);try {const r = await fetch(${API_URL}/api/crear-pago, {method: 'POST',headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ id_guia: idGuia, nombre_guia: nombreGuia, precio, usuario: usuario.username })});const d = await r.json();if (d.success && d.init_point) {window.location.href = d.init_point;} else {alert('Error al generar la pasarela de Mercado Pago');}} catch (e) {alert('Error de conexión al procesar el pago');}}// Función para terminar sesiónfunction cerrarSesion() {localStorage.removeItem('usuario');location.reload();}
+### 🛠️ Siguientes pasos:
+1. Copia absolutamente todo este bloque de arriba.
+2. Borra el contenido actual de tu `index.html` en GitHub y pega este.
+3. Guarda los cambios presionando **Commit changes**.
+4. Ve a Render a tu sitio `forgemind-oficial`, dale a **Manual Deploy** y luego a **Clear Cache and Deploy**.
+
+¿Me avisas cuando termine de desplegarse en Render para que entremos a validar los botones?
