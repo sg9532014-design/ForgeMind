@@ -3,35 +3,30 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const { MercadoPagoConfig, Preference } = require('mercadopago');
-const bcrypt = require('bcryptjs'); // Usamos bcryptjs para evitar errores de compilación en Render
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuración de Mercado Pago
 const mpAccessToken = process.env.MERCADOPAGO_TOKEN;
 const client = new MercadoPagoConfig({ accessToken: mpAccessToken });
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://forgemind-lf3.onrender.com";
 
-// Middlewares
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '.')));
 
-// Base de datos en archivo JSON (Persistencia simple)
 const USERS_FILE = path.join(__dirname, 'usuarios.json');
 let usuarios = [];
-
 if (fs.existsSync(USERS_FILE)) {
     try { usuarios = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } 
     catch (e) { usuarios = []; }
 }
-
 function guardarUsuarios() {
     fs.writeFileSync(USERS_FILE, JSON.stringify(usuarios, null, 2));
 }
 
-// 1. REGISTRO
+// REGISTRO
 app.post('/api/registrar', async (req, res) => {
     try {
         const { username, password, plan } = req.body;
@@ -49,7 +44,7 @@ app.post('/api/registrar', async (req, res) => {
     }
 });
 
-// 2. LOGIN
+// LOGIN
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -59,18 +54,18 @@ app.post('/api/login', async (req, res) => {
         const match = await bcrypt.compare(password, usuario.password);
         if (!match) return res.status(401).json({ success: false, message: 'Contraseña incorrecta' });
 
-        res.status(200).json({ success: true, message: 'Bienvenido', user: { username: usuario.username, plan: usuario.plan } });
+        res.status(200).json({ success: true, message: 'Bienvenido ' + username, user: { username: usuario.username, plan: usuario.plan } });
     } catch (error) {
         console.error('Error login:', error);
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 });
 
-// 3. CREAR PAGO (Mercado Pago)
+// PAGO
 app.post('/api/crear-pago', async (req, res) => {
     try {
         const { id_guia, nombre_guia, precio, usuario } = req.body;
-        if (!mpAccessToken) return res.status(500).json({ success: false, message: 'Token de MP no configurado en el servidor' });
+        if (!mpAccessToken) return res.status(500).json({ success: false, message: 'Token de MP no configurado' });
 
         const preference = new Preference(client);
         const result = await preference.create({
@@ -84,19 +79,16 @@ app.post('/api/crear-pago', async (req, res) => {
         res.json({ success: true, init_point: result.init_point });
     } catch (error) {
         console.error("Error Mercado Pago:", error);
-        const errorMsg = error.cause ? error.cause.message : error.message;
-        res.status(500).json({ success: false, message: 'Error al procesar el pago', details: errorMsg });
+        res.status(500).json({ success: false, message: 'Error al procesar el pago', details: error.message });
     }
 });
 
-// 4. DIAGNÓSTICO (Para verificar que todo está bien)
+// DIAGNÓSTICO
 app.get('/api/diagnostico', (req, res) => {
     res.json({
         status: 'OK',
         mpTokenConfigurado: !!mpAccessToken,
-        mpTokenEmpiezaCon: mpAccessToken ? mpAccessToken.substring(0, 8) + '...' : 'Ninguno',
-        usuariosRegistrados: usuarios.length,
-        frontendUrl: FRONTEND_URL
+        usuariosRegistrados: usuarios.length
     });
 });
 
