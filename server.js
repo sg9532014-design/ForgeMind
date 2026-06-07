@@ -12,7 +12,27 @@ const mpAccessToken = process.env.MERCADOPAGO_TOKEN;
 const client = new MercadoPagoConfig({ accessToken: mpAccessToken });
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://onrender.com";
 
-app.use(cors({ origin: '*' }));
+const allowedOrigins = [
+    FRONTEND_URL,
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173'
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const allowed = allowedOrigins.some(allowedOrigin => allowedOrigin === origin);
+        const railway = /^https:\/\/[a-z0-9-]+\.railway\.app$/i.test(origin);
+        const render = /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
+        callback(null, allowed || railway || render);
+    },
+    credentials: true,
+    methods: ['GET', 'POST']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '.')));
 
