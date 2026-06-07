@@ -94,61 +94,15 @@
             <button onclick="iniciarSesion()">Ingresar</button>
         </div>
     </div>
-    <script>
-        const API_URL = window.location.origin; // Usa la misma URL del servidor que sirve los archivos
-
-        function abrirModal(modalId) { const m = document.getElementById(modalId); if (m) m.style.display = 'flex'; }
-        function cerrarModal(modalId) { const m = document.getElementById(modalId); if (m) m.style.display = 'none'; }
-        document.addEventListener("DOMContentLoaded", () => {
-            const usuarioData = localStorage.getItem('usuario');
-            if (usuarioData) {
-                const u = JSON.parse(usuarioData);
-                const c = document.getElementById('auth-buttons');
-                if (c) c.innerHTML = `<span style="margin-right:1rem; color:#10b981; font-weight:bold; align-self:center;">👋 Hola, ${u.username}</span><button class="danger" onclick="cerrarSesion()">Cerrar Sesión</button>`;
-            }
-        });
-        async function registrarUsuario() {
-            const uEl = document.getElementById('reg-username'); const pEl = document.getElementById('reg-password'); const plEl = document.getElementById('reg-plan');
-            if (!uEl || !pEl) return; const username = uEl.value.trim(); const password = pEl.value; const plan = plEl ? plEl.value : 'basico';
-            if (!username || !password) return alert('Por favor, completa todos los campos');
-            try {
-                const r = await fetch(`${API_URL}/api/registrar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, plan }) });
-                const d = await r.json(); if (d.success) { alert('¡Registro exitoso! Ahora inicia sesión.'); cerrarModal('modal-registro'); abrirModal('modal-login'); } else { alert('Error: ' + d.message); }
-            } catch (e) { alert('Error de conexión con el servidor backend'); }
-        }
-        async function iniciarSesion() {
-            const uEl = document.getElementById('log-username'); const pEl = document.getElementById('log-password'); if (!uEl || !pEl) return;
-            const username = uEl.value.trim(); const password = pEl.value; if (!username || !password) return alert('Por favor, completa todos los campos');
-            try {
-                const r = await fetch(`${API_URL}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
-                const d = await r.json(); if (d.success) { alert('¡Bienvenido a ForgeMind!'); localStorage.setItem('usuario', JSON.stringify(d.user)); location.reload(); } else { alert('Error: ' + d.message); }
-            } catch (e) { alert('Error de conexión con el servidor backend'); }
-        }
-        async function procesarPago(idGuia, nombreGuia, precio) {
-            // Enlaces manuales de respaldo
-            const enlacesManuales = {
-                'guia_video': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_GUIA_VIDEO',
-                'guia_mant': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_GUIA_MANT',
-                'kit_premium': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_KIT'
-            };
-
-            const uData = localStorage.getItem('usuario'); if (!uData) { alert('Debes iniciar sesión para realizar una compra'); abrirModal('modal-login'); return; }
-            const u = JSON.parse(uData);
-            try {
-                const r = await fetch(`${API_URL}/api/crear-pago`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id_guia: idGuia, nombre_guia: nombreGuia, precio, usuario: u.username }) });
-                const d = await r.json();
-                if (d.init_point) { window.location.href = d.init_point; return; }
-                if (d.preferenceId) { window.location.href = `https://mercadopago.com/${d.preferenceId}`; return; }
-
-                // Si no se generó init_point, usar enlace manual de respaldo
-                console.warn('El backend no generó init_point, usando enlace de respaldo...');
-                if (enlacesManuales[idGuia]) { window.location.href = enlacesManuales[idGuia]; } else { alert('⚠️ No se pudo generar el enlace de pago automático y no hay enlace manual configurado.'); }
-            } catch (e) {
-                console.error('Error al procesar pago:', e);
-                if (enlacesManuales[idGuia]) { window.location.href = enlacesManuales[idGuia]; } else { alert('❌ Error de conexión con la pasarela de cobros.'); }
-            }
-        }
-        function cerrarSesion() { localStorage.removeItem('usuario'); location.reload(); }
-    </script>
+    <div class="modal" id="modal-historial">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-btn" onclick="cerrarModal('modal-historial')">&times;</button>
+            <h2 style="margin-bottom: 1rem;">📋 Mi Historial de Compras</h2>
+            <div id="historial-contenido" style="max-height: 400px; overflow-y: auto;">
+                <p style="text-align: center; color: #94a3b8;">Cargando...</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>

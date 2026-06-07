@@ -1,5 +1,35 @@
 # ForgeMind
 
+Aplicación de ejemplo para venta de guías técnicas con integración a MercadoPago.
+
+Requisitos
+- Node.js 18+ / 24+
+- `npm install` para dependencias
+
+Variables de entorno (crear un archivo `.env` en la raíz):
+
+```
+PORT=10000
+MERCADOPAGO_TOKEN=APP_USR-... (tu token de MercadoPago)
+ADMIN_TOKEN=admin123
+FRONTEND_URL=http://localhost:10000
+BACKEND_URL=http://localhost:10000
+```
+
+Despliegue local
+
+```bash
+npm install
+npm start
+# Abre la URL del servidor (o el reenvío de Codespaces)
+```
+
+Notas sobre producción
+- No comites `.env` ni tokens en el repositorio.
+- Configura un webhook público en MercadoPago apuntando a `/api/webhook/mp` para confirmar pagos.
+- En `.env`, usa `ADMIN_TOKEN` distinto de `admin123` en producción.
+- Considera migrar la persistencia a una base de datos (SQLite/Postgres) y añadir validaciones y tests.
+
 Panel de control para análisis de video e imágenes enfocado en el mantenimiento preventivo y análisis de maquinaria.
 
 ## Características
@@ -31,7 +61,9 @@ Edita `.env`:
 ```
 PORT=10000
 MERCADOPAGO_TOKEN=tu_token_aqui
+ADMIN_TOKEN=admin123
 FRONTEND_URL=http://localhost:10000
+BACKEND_URL=http://localhost:10000
 ```
 
 **Cómo obtener el token de Mercado Pago:**

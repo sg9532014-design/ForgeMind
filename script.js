@@ -1,150 +1,182 @@
-// Manejo de Modales
-const registerModal = document.getElementById("registerModal");
-const loginModal = document.getElementById("loginModal");
-const showRegisterModalBtn = document.getElementById("showRegisterModal");
-const showLoginModalBtn = document.getElementById("showLoginModal");
-const showLoginFromRegisterLink = document.getElementById("showLoginFromRegister");
-const showRegisterFromLoginLink = document.getElementById("showRegisterFromLogin");
+const API_URL = window.location.origin;
 
-// URL de tu Backend: usa la misma URL del servidor que sirve la web
-const API_BASE_URL = window.location.origin;
+function abrirModal(modalId) {
+    if (modalId === 'modal-historial') abrirHistorial();
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'flex';
+}
 
+function cerrarModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+}
 
-function closeModal(modal) { if (modal) modal.style.display = "none"; }
-function openModal(modal) { if (modal) modal.style.display = "flex"; }
+window.addEventListener('click', (event) => {
+    const loginModal = document.getElementById('modal-login');
+    const registerModal = document.getElementById('modal-registro');
+    const historialModal = document.getElementById('modal-historial');
 
-if (showRegisterModalBtn) showRegisterModalBtn.onclick = () => openModal(registerModal);
-if (showLoginModalBtn) showLoginModalBtn.onclick = () => openModal(loginModal);
-
-document.querySelectorAll(".close-button").forEach(button => {
-    button.onclick = (event) => closeModal(event.target.closest(".modal"));
+    if (event.target === loginModal) cerrarModal('modal-login');
+    if (event.target === registerModal) cerrarModal('modal-registro');
+    if (event.target === historialModal) cerrarModal('modal-historial');
 });
 
-window.onclick = (event) => {
-    if (event.target == registerModal) closeModal(registerModal);
-    if (event.target == loginModal) closeModal(loginModal);
-};
-
-if (showLoginFromRegisterLink) {
-    showLoginFromRegisterLink.onclick = (e) => {
-        e.preventDefault(); closeModal(registerModal); openModal(loginModal);
-    };
-}
-
-if (showRegisterFromLoginLink) {
-    showRegisterFromLoginLink.onclick = (e) => {
-        e.preventDefault(); closeModal(loginModal); openModal(registerModal);
-    };
-}
-
-// Registro de Usuarios
-const registerForm = document.getElementById("registerForm");
-if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const username = document.getElementById("regUsername").value;
-        const password = document.getElementById("regPassword").value;
-        const plan = document.getElementById("regPlan").value;
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/registrar`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password, plan })
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                alert("Registro exitoso: " + data.message);
-                localStorage.setItem("usuario_forgemind", username);
-                closeModal(registerModal);
-            } else {
-                alert("Error en el registro: " + (data.message || "Hubo un problema."));
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error de conexión con el servidor. Asegúrate de que el backend esté activo.");
+document.addEventListener('DOMContentLoaded', () => {
+    const usuarioData = localStorage.getItem('usuario');
+    if (usuarioData) {
+        const u = JSON.parse(usuarioData);
+        const authButtons = document.getElementById('auth-buttons');
+        if (authButtons) {
+            authButtons.innerHTML = `
+                <button class="secondary" onclick="abrirModal('modal-historial')">📋 Mi Historial</button>
+                <button class="secondary" onclick="location.href='admin.html'">🔒 Admin</button>
+                <span style="margin-right:1rem; color:#10b981; font-weight:bold; align-self:center;">👋 Hola, ${u.username}</span>
+                <button class="danger" onclick="cerrarSesion()">Cerrar Sesión</button>
+            `;
         }
-    });
-}
+    }
+});
 
-// Inicio de Sesión
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const username = document.getElementById("logUsername").value;
-        const password = document.getElementById("logPassword").value;
+async function registrarUsuario() {
+    const uEl = document.getElementById('reg-username');
+    const pEl = document.getElementById('reg-password');
+    const plEl = document.getElementById('reg-plan');
+    if (!uEl || !pEl || !plEl) return;
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-            });
+    const username = uEl.value.trim();
+    const password = pEl.value;
+    const plan = plEl.value;
 
-            const data = await response.json();
-            if (response.ok) {
-                alert("Ingreso exitoso: " + data.message);
-                localStorage.setItem("usuario_forgemind", username);
-                closeModal(loginModal);
-            } else {
-                alert("Error en el ingreso: " + (data.message || "Credenciales incorrectas."));
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error de conexión con el servidor.");
-        }
-    });
-}
-
-async function comprarGuia(idGuia, nombreGuia, precioGuia) {
-    // 1. ENLACES DE RESPALDO MANUALES (Sustituye con tus links reales de Mercado Pago/Stripe si los tienes)
-    const enlacesManuales = {
-        'guia_video': 'TU_LINK_DE_PAGO_MANUAL_GUIA_VIDEO', 
-        'guia_mant': 'TU_LINK_DE_PAGO_MANUAL_GUIA_MANTENIMIENTO'
-    };
+    if (!username || !password) return alert('Por favor, completa todos los campos');
 
     try {
-        const usuarioLogueado = localStorage.getItem("usuario_forgemind") || "Invitado";
-        const respuesta = await fetch(`${API_BASE_URL}/api/crear-pago`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id_guia: idGuia,
-                nombre_guia: nombreGuia,
-                precio: precioGuia,
-                usuario: usuarioLogueado
-            })
+        const response = await fetch(`${API_URL}/api/registrar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, plan })
         });
-
-        const datos = await respuesta.json();
-        
-        // Si el backend responde con el link de Mercado Pago, redirige de inmediato
-        if (datos.init_point) {
-            window.location.href = datos.init_point;
-            return;
-        } else if (datos.preferenceId) {
-            // Si regresa el ID en lugar del link completo
-            window.location.href = `https://mercadopago.com{datos.preferenceId}`;
-            return;
-        }
-        
-        // 2. PLAN DE EMERGENCIA: Si el backend no generó el link, usa el manual
-        console.warn("El backend no generó init_point, usando enlace de respaldo...");
-        if (enlacesManuales[idGuia]) {
-            window.location.href = enlacesManuales[idGuia];
+        const data = await response.json();
+        if (response.ok && data.success) {
+            alert('¡Registro exitoso! Ahora inicia sesión.');
+            cerrarModal('modal-registro');
+            abrirModal('modal-login');
         } else {
-            alert("⚠️ No se pudo generar el enlace de pago automático y no hay enlace manual configurado.");
+            alert('Error: ' + (data.message || 'No se pudo registrar.'));
         }
-
     } catch (error) {
-        console.error("Error:", error);
-        // Si el backend da error de conexión del todo, nos vamos al enlace manual para no perder la venta
+        console.error(error);
+        alert('Error de conexión con el servidor backend');
+    }
+}
+
+async function iniciarSesion() {
+    const uEl = document.getElementById('log-username');
+    const pEl = document.getElementById('log-password');
+    if (!uEl || !pEl) return;
+
+    const username = uEl.value.trim();
+    const password = pEl.value;
+    if (!username || !password) return alert('Por favor, completa todos los campos');
+
+    try {
+        const response = await fetch(`${API_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            alert('¡Bienvenido a ForgeMind!');
+            localStorage.setItem('usuario', JSON.stringify(data.user));
+            location.reload();
+        } else {
+            alert('Error: ' + (data.message || 'Credenciales incorrectas.'));
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Error de conexión con el servidor backend');
+    }
+}
+
+async function procesarPago(idGuia, nombreGuia, precio) {
+    const enlacesManuales = {
+        'guia_video': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_GUIA_VIDEO',
+        'guia_mant': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_GUIA_MANT',
+        'kit_premium': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_KIT'
+    };
+
+    const uData = localStorage.getItem('usuario');
+    if (!uData) {
+        alert('Debes iniciar sesión para realizar una compra');
+        abrirModal('modal-login');
+        return;
+    }
+
+    const user = JSON.parse(uData);
+    try {
+        const response = await fetch(`${API_URL}/api/crear-pago`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_guia: idGuia, nombre_guia: nombreGuia, precio, usuario: user.username })
+        });
+        const data = await response.json();
+        if (data.init_point) {
+            window.location.href = data.init_point;
+            return;
+        }
+        if (data.preferenceId) {
+            window.location.href = `https://mercadopago.com/${data.preferenceId}`;
+            return;
+        }
+        console.warn('El backend no generó init_point, usando enlace de respaldo...');
         if (enlacesManuales[idGuia]) {
             window.location.href = enlacesManuales[idGuia];
         } else {
-            alert("❌ Error de conexión con la pasarela de cobros.");
+            alert('⚠️ No se pudo generar el enlace de pago automático y no hay enlace manual configurado.');
         }
+    } catch (error) {
+        console.error('Error al procesar pago:', error);
+        if (enlacesManuales[idGuia]) {
+            window.location.href = enlacesManuales[idGuia];
+        } else {
+            alert('❌ Error de conexión con la pasarela de cobros.');
+        }
+    }
+}
+
+function cerrarSesion() {
+    localStorage.removeItem('usuario');
+    location.reload();
+}
+
+async function abrirHistorial() {
+    const uData = localStorage.getItem('usuario');
+    if (!uData) return;
+
+    const user = JSON.parse(uData);
+    try {
+        const response = await fetch(`${API_URL}/api/historial-compras`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user.username })
+        });
+        const data = await response.json();
+        const historialContenido = document.getElementById('historial-contenido');
+
+        if (data.success && data.compras && data.compras.length > 0) {
+            historialContenido.innerHTML = data.compras.map(c => `
+                <div style="padding: 1rem; border: 1px solid #334155; border-radius: 6px; margin-bottom: 0.5rem; background-color: #0f172a;">
+                    <p><strong>${c.nombre_guia}</strong></p>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Precio: $${c.precio} MXN</p>
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Fecha: ${new Date(c.fecha).toLocaleDateString()}</p>
+                    <p style="color: #10b981; font-size: 0.9rem;">Estado: ${c.estado}</p>
+                </div>
+            `).join('');
+        } else {
+            historialContenido.innerHTML = '<p style="text-align: center; color: #94a3b8;">Aún no tienes compras</p>';
+        }
+    } catch (error) {
+        console.error('Error al cargar historial:', error);
+        document.getElementById('historial-contenido').innerHTML = '<p style="color: #ef4444;">Error al cargar historial</p>';
     }
 }

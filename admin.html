@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForgeMind Admin</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; padding: 2rem; }
+        header { background-color: #1e293b; padding: 1.5rem; border-bottom: 2px solid #ef4444; margin-bottom: 2rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { color: #ef4444; font-size: 1.8rem; }
+        .login-form { max-width: 400px; margin: 2rem auto; background-color: #1e293b; padding: 2rem; border-radius: 8px; border: 1px solid #334155; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #94a3b8; }
+        .form-group input { width: 100%; padding: 0.7rem; border: 1px solid #334155; border-radius: 6px; background-color: #0f172a; color: white; }
+        button { background-color: #ef4444; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        button:hover { background-color: #dc2626; }
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background-color: #1e293b; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #3b82f6; }
+        .stat-value { font-size: 2rem; color: #10b981; font-weight: bold; }
+        .stat-label { color: #94a3b8; margin-top: 0.5rem; }
+        .section { margin-bottom: 2rem; }
+        .section h2 { margin-bottom: 1rem; color: #3b82f6; }
+        table { width: 100%; border-collapse: collapse; background-color: #1e293b; border-radius: 8px; overflow: hidden; }
+        th { background-color: #334155; padding: 1rem; text-align: left; font-weight: bold; }
+        td { padding: 1rem; border-top: 1px solid #334155; }
+        tr:hover { background-color: #0f172a; }
+        .badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.85rem; }
+        .badge-basico { background-color: #1e40af; color: white; }
+        .badge-premium { background-color: #7c2d12; color: white; }
+        .logout { background-color: #64748b; }
+        .logout:hover { background-color: #475569; }
+    </style>
+</head>
+<body>
+    <div id="login-form" class="login-form">
+        <h2 style="margin-bottom: 1.5rem; color: #ef4444;">Panel Admin</h2>
+        <div class="form-group">
+            <label>Token de Admin</label>
+            <input type="password" id="admin-token" placeholder="Ingresa el token" />
+        </div>
+        <button onclick="loginAdmin()">Acceder</button>
+    </div>
+
+    <div id="dashboard" class="dashboard">
+        <header>
+            <h1>🔒 Panel Admin - ForgeMind</h1>
+            <button class="logout" onclick="logout()">Cerrar Sesión</button>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-ventas">0</div>
+                <div class="stat-label">Total de Ventas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-ingresos">$0</div>
+                <div class="stat-label">Ingresos Totales (MXN)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-usuarios">0</div>
+                <div class="stat-label">Usuarios Registrados</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Últimas Ventas</h2>
+            <table id="sales-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-body">
+                    <tr><td colspan="5" style="text-align: center; color: #94a3b8;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>👥 Usuarios Registrados</h2>
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Plan</th>
+                        <th>Compras</th>
+                        <th>Fecha de Registro</th>
+                    </tr>
+                </thead>
+                <tbody id="users-body">
+                    <tr><td colspan="4" style="text-align: center; color: #94a3b8;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let adminToken = null;
+
+        async function loginAdmin() {
+            const token = document.getElementById('admin-token').value;
+            if (!token) return alert('Ingresa el token');
+
+            try {
+                const r = await fetch(`${API_URL}/api/admin/ventas`, {
+                    headers: { 'x-admin-token': token }
+                });
+                const d = await r.json();
+                if (d.success) {
+                    adminToken = token;
+                    localStorage.setItem('admin-token', token);
+                    document.getElementById('login-form').style.display = 'none';
+                    document.getElementById('dashboard').classList.add('active');
+                    cargarDatos();
+                } else {
+                    alert('Token inválido');
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function cargarDatos() {
+            try {
+                const ventas = await fetch(`${API_URL}/api/admin/ventas`, {
+                    headers: { 'x-admin-token': adminToken }
+                }).then(r => r.json());
+
+                const usuarios = await fetch(`${API_URL}/api/admin/usuarios`, {
+                    headers: { 'x-admin-token': adminToken }
+                }).then(r => r.json());
+
+                if (ventas.success) {
+                    document.getElementById('total-ventas').textContent = ventas.totalVentas;
+                    document.getElementById('total-ingresos').textContent = `$${ventas.totalIngresos.toLocaleString()}`;
+
+                    const tbody = document.getElementById('sales-body');
+                    tbody.innerHTML = ventas.ventas.slice(0, 10).map(v => `
+                        <tr>
+                            <td>${v.usuario}</td>
+                            <td>${v.nombre_guia}</td>
+                            <td>$${v.precio}</td>
+                            <td>${new Date(v.fecha).toLocaleDateString()}</td>
+                            <td><span class="badge" style="background-color: #059669;">${v.estado}</span></td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="5" style="text-align: center;">Sin ventas</td></tr>';
+                }
+
+                if (usuarios.success) {
+                    document.getElementById('total-usuarios').textContent = usuarios.total;
+
+                    const tbody = document.getElementById('users-body');
+                    tbody.innerHTML = usuarios.usuarios.map(u => `
+                        <tr>
+                            <td>${u.username}</td>
+                            <td><span class="badge ${u.plan === 'premium' ? 'badge-premium' : 'badge-basico'}">${u.plan}</span></td>
+                            <td>${u.compras}</td>
+                            <td>${new Date(u.fecha_registro).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="4" style="text-align: center;">Sin usuarios</td></tr>';
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        }
+
+        function logout() {
+            adminToken = null;
+            localStorage.removeItem('admin-token');
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('admin-token').value = '';
+        }
+
+        // Cargar token si existe
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('admin-token');
+            if (token) {
+                adminToken = token;
+                document.getElementById('admin-token').value = token;
+                loginAdmin();
+            }
+        });
+    </script>
+</body>
+</html>
