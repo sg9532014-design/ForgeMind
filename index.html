@@ -63,6 +63,16 @@
                     <button onclick="procesarPago('guia_mant', 'Guía de Mantenimiento Avanzado', 80)">Comprar Guía</button>
                 </div>
             </div>
+            <div class="card">
+                <div>
+                    <h3>Kit Completo Premium</h3>
+                    <p>Acceso a todas las guías + soporte técnico prioritario y actualizaciones mensuales.</p>
+                </div>
+                <div>
+                    <div class="price">$150 MXN</div>
+                    <button onclick="procesarPago('kit_premium', 'Kit Completo Premium', 150)">Adquirir Kit</button>
+                </div>
+            </div>
         </div>
     </main>
     <div class="modal" id="modal-registro">
@@ -115,12 +125,28 @@
             } catch (e) { alert('Error de conexión con el servidor backend'); }
         }
         async function procesarPago(idGuia, nombreGuia, precio) {
+            // Enlaces manuales de respaldo
+            const enlacesManuales = {
+                'guia_video': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_GUIA_VIDEO',
+                'guia_mant': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_GUIA_MANT',
+                'kit_premium': 'https://mercadopago.com/checkout/v1/redirect?pref_id=TU_PREFERENCE_ID_KIT'
+            };
+
             const uData = localStorage.getItem('usuario'); if (!uData) { alert('Debes iniciar sesión para realizar una compra'); abrirModal('modal-login'); return; }
             const u = JSON.parse(uData);
             try {
                 const r = await fetch(`${API_URL}/api/crear-pago`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id_guia: idGuia, nombre_guia: nombreGuia, precio, usuario: u.username }) });
-                const d = await r.json(); if (d.success && d.init_point) { window.location.href = d.init_point; } else { alert('Error al generar la pasarela de Mercado Pago'); }
-            } catch (e) { alert('Error de conexión al procesar el pago'); }
+                const d = await r.json();
+                if (d.init_point) { window.location.href = d.init_point; return; }
+                if (d.preferenceId) { window.location.href = `https://mercadopago.com/${d.preferenceId}`; return; }
+
+                // Si no se generó init_point, usar enlace manual de respaldo
+                console.warn('El backend no generó init_point, usando enlace de respaldo...');
+                if (enlacesManuales[idGuia]) { window.location.href = enlacesManuales[idGuia]; } else { alert('⚠️ No se pudo generar el enlace de pago automático y no hay enlace manual configurado.'); }
+            } catch (e) {
+                console.error('Error al procesar pago:', e);
+                if (enlacesManuales[idGuia]) { window.location.href = enlacesManuales[idGuia]; } else { alert('❌ Error de conexión con la pasarela de cobros.'); }
+            }
         }
         function cerrarSesion() { localStorage.removeItem('usuario'); location.reload(); }
     </script>

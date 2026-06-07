@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 10000; 
