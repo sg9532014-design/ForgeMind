@@ -1,26 +1,8 @@
 [
   {
-    "username": "testuser",
-    "password": "$2a$10$nPyCcmYuiWphN.dBUi6v7.oZasc75SKQ.CS0WDb/Txh/4fwNGSPF.",
-    "plan": "basico",
-    "fecha": "2026-06-07T19:35:32.196Z"
-  },
-  {
-    "username": "mecanico",
-    "password": "$2a$10$2ZGkiP.JUtyeUw1pJikGpuEaKu/RbsnA6rYQToD8beEKvId9AsFBG",
-    "plan": "basico",
-    "fecha": "2026-06-07T19:39:28.785Z"
-  },
-  {
-    "username": "cliente2",
-    "password": "$2a$10$cZxpieVzAfMsnYBYcf2mA.Ru7dQzVrF63gPbkqAnw6ZXc6hVBujc.",
-    "plan": "basico",
-    "fecha": "2026-06-07T19:46:39.530Z"
-  },
-  {
-    "username": "usuario_compra",
-    "password": "$2a$10$LAyu08Gb71xPo9pG7SpEwOE.6lVldnaQQRzQOvq9W4590/d4yknbu",
-    "plan": "basico",
-    "fecha": "2026-06-07T19:55:20.006Z"
+    "username": "admin_demo",
+    "password": "$2a$10$TO1ProAf0eYAEFwKNLsqPeFMQm9VuFMtn212QTLvripxhxSQhzmpy",
+    "plan": "admin",
+    "fecha": "2026-06-07T22:59:11.728Z"
   }
 ]
