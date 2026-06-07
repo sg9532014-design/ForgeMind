@@ -85,7 +85,7 @@
         </div>
     </div>
     <script>
-        const API_URL = 'TU_URL_DE_RENDER_AQUI'; // <- Pega aquí la dirección que copiaste en el Paso 1
+        const API_URL = window.location.origin; // Usa la misma URL del servidor que sirve los archivos
 
         function abrirModal(modalId) { const m = document.getElementById(modalId); if (m) m.style.display = 'flex'; }
         function cerrarModal(modalId) { const m = document.getElementById(modalId); if (m) m.style.display = 'none'; }

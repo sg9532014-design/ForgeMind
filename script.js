@@ -6,8 +6,8 @@ const showLoginModalBtn = document.getElementById("showLoginModal");
 const showLoginFromRegisterLink = document.getElementById("showLoginFromRegister");
 const showRegisterFromLoginLink = document.getElementById("showRegisterFromLogin");
 
-// URL de tu Backend en Render
-const API_BASE_URL = 'TU_URL_DE_RENDER_AQUI'; // <- Pega aquí la misma dirección de Render del Paso 1
+// URL de tu Backend: usa la misma URL del servidor que sirve la web
+const API_BASE_URL = window.location.origin;
 
 
 function closeModal(modal) { if (modal) modal.style.display = "none"; }
