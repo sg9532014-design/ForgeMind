@@ -8,9 +8,14 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = process.env.PORT || 10000; 
 
+// CONFIGURACIÓN DE MERCADO PAGO (CORREGIDA)
 const mpAccessToken = process.env.MERCADOPAGO_TOKEN;
-const client = new MercadoPagoConfig({ accessToken: mpAccessToken });
-const FRONTEND_URL = process.env.FRONTEND_URL || "https://onrender.com";
+
+const client = new MercadoPagoConfig({ 
+    accessToken: mpAccessToken 
+});
+
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://railway.app";
 
 const allowedOrigins = [
     FRONTEND_URL,
@@ -79,7 +84,8 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/crear-pago', async (req, res) => {
     try {
         const { id_guia, nombre_guia, precio, usuario } = req.body;
-        if (!mpAccessToken) return res.status(500).json({ success: false, message: 'Token MP faltante' });
+        if (!mpAccessToken) return res.status(500).json({ success: false, message: 'Token MP faltante en servidor' });
+        
         const preference = new Preference(client);
         const result = await preference.create({
             body: {
