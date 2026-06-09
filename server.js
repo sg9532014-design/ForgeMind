@@ -98,19 +98,45 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/crear-pago', async (req, res) => {
     try {
         const { id_guia, nombre_guia, precio, usuario } = req.body;
-        if (!mpAccessToken) return res.status(500).json({ success: false, message: 'Token MP faltante en servidor' });
         
+        console.log('📋 Solicitud de pago:', { id_guia, nombre_guia, precio, usuario });
+        console.log('🔑 Token MP configurado:', !!mpAccessToken);
+        
+        if (!mpAccessToken) {
+            console.error('❌ Token MP faltante');
+            return res.status(500).json({ success: false, message: 'Token MP faltante en servidor' });
+        }
+        
+        if (!id_guia || !nombre_guia || !precio || !usuario) {
+            console.error('❌ Faltan parámetros:', { id_guia, nombre_guia, precio, usuario });
+            return res.status(400).json({ success: false, message: 'Faltan parámetros requeridos' });
+        }
+        
+        console.log('✅ Creando preferencia de Mercado Pago...');
         const preference = new Preference(client);
-        const result = await preference.create({
-            body: {
-                items: [{ title: nombre_guia, quantity: 1, unit_price: Number(precio), currency_id: 'ARS' }],
-                back_urls: { success: FRONTEND_URL, failure: FRONTEND_URL, pending: FRONTEND_URL },
-                redirect_urls: { success: FRONTEND_URL, failure: FRONTEND_URL, pending: FRONTEND_URL },
-                notification_url: `${BACKEND_URL}/api/webhook/mp`,
-                auto_return: 'approved',
-                metadata: { usuario, id_guia }
-            }
-        });
+        
+        const preferenceData = {
+            items: [{ 
+                title: nombre_guia, 
+                quantity: 1, 
+                unit_price: Number(precio), 
+                currency_id: 'ARS' 
+            }],
+            back_urls: { 
+                success: FRONTEND_URL, 
+                failure: FRONTEND_URL, 
+                pending: FRONTEND_URL 
+            },
+            notification_url: `${BACKEND_URL}/api/webhook/mp`,
+            auto_return: 'approved',
+            metadata: { usuario, id_guia }
+        };
+        
+        console.log('📊 Datos de preferencia:', JSON.stringify(preferenceData, null, 2));
+        
+        const result = await preference.create({ body: preferenceData });
+        
+        console.log('✅ Preferencia creada:', { init_point: result.init_point, id: result.id });
         
         // Guardar la venta
         ventas.push({
@@ -126,7 +152,11 @@ app.post('/api/crear-pago', async (req, res) => {
         guardarVentas();
         
         res.json({ success: true, init_point: result.init_point });
-    } catch (error) { res.status(500).json({ success: false, message: 'Error en pago', details: error.message }); }
+    } catch (error) { 
+        console.error('❌ Error en crear-pago:', error.message);
+        console.error('Detalles completos:', error);
+        res.status(500).json({ success: false, message: 'Error en pago', details: error.message }); 
+    }
 });
 
 // Endpoint para obtener historial de compras del usuario
