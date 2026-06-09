@@ -35,7 +35,7 @@ Panel de control para análisis de video e imágenes enfocado en el mantenimient
 ## Características
 - Registro e inicio de sesión de usuarios.
 - Integración con Mercado Pago para la compra de guías técnicas.
-- Interfaz moderna y funcional.
+- Interfaz moderna y funcional con contenido de producto específico.
 - Flujo completo de compra: registro → seleccionar plan → pagar → acceso a recursos.
 
 ## Tecnologías
@@ -149,7 +149,12 @@ curl -i -X POST http://localhost:10000/api/crear-pago \
 .
 ├── server.js              # Backend Express
 ├── index.html             # Frontend + modales y lógica de pago
-├── script.js              # Lógica adicional (no usado actualmente)
+├── script.js              # Lógica de registro, login y pago
+├── contenido/             # Páginas de contenido de producto
+│   ├── guia_video.html
+│   ├── guia_mantenimiento.html
+│   ├── kit_premium.html
+│   └── caso_reparacion.html
 ├── package.json           # Dependencias
 ├── .env                   # Variables de entorno (privado)
 ├── .env.example           # Plantilla de variables

@@ -1,8 +1,14 @@
 [
   {
-    "username": "admin_demo",
-    "password": "$2a$10$TO1ProAf0eYAEFwKNLsqPeFMQm9VuFMtn212QTLvripxhxSQhzmpy",
-    "plan": "admin",
-    "fecha": "2026-06-07T22:59:11.728Z"
+    "username": "Gris",
+    "password": "$2a$10$PaW8/xgWkDzI/HYxWim8eeStMWOYUFwjA21EIqu9taN6LArGwoMUa",
+    "plan": "basico",
+    "fecha": "2026-06-07T23:21:17.158Z"
+  },
+  {
+    "username": "prueba_test",
+    "password": "$2a$10$jZoX8BNmLISpOJu7ZkBLSe0VDc95IAYYui032y/7.IKZTuPi2AwVa",
+    "plan": "premium",
+    "fecha": "2026-06-07T23:23:47.339Z"
   }
 ]

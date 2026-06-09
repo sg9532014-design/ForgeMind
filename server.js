@@ -42,7 +42,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '.')));
 
 const USERS_FILE = path.join(__dirname, 'usuarios.json');
 const SALES_FILE = path.join(__dirname, 'ventas.json');
@@ -220,5 +219,8 @@ app.post('/api/webhook/mp', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error interno en webhook' });
     }
 });
+
+// ARCHIVOS ESTÁTICOS: Después de todas las rutas API
+app.use(express.static(path.join(__dirname, '.')));
 
 app.listen(PORT, '0.0.0.0', () => { console.log(`Backend listo en puerto ${PORT}`); });

@@ -27,9 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const u = JSON.parse(usuarioData);
         const authButtons = document.getElementById('auth-buttons');
         if (authButtons) {
+            const isAdmin = u.username && u.username.toLowerCase() === 'admin';
             authButtons.innerHTML = `
                 <button class="secondary" onclick="abrirModal('modal-historial')">📋 Mi Historial</button>
-                <button class="secondary" onclick="location.href='admin.html'">🔒 Admin</button>
+                ${isAdmin ? `<button class="secondary" onclick="location.href='admin.html'">🔒 Admin</button>` : ''}
                 <span style="margin-right:1rem; color:#10b981; font-weight:bold; align-self:center;">👋 Hola, ${u.username}</span>
                 <button class="danger" onclick="cerrarSesion()">Cerrar Sesión</button>
             `;
