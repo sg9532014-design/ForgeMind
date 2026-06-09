@@ -103,7 +103,7 @@ app.post('/api/crear-pago', async (req, res) => {
         const preference = new Preference(client);
         const result = await preference.create({
             body: {
-                items: [{ title: nombre_guia, quantity: 1, unit_price: Number(precio), currency_id: 'MXN' }],
+                items: [{ title: nombre_guia, quantity: 1, unit_price: Number(precio), currency_id: 'ARS' }],
                 back_urls: { success: FRONTEND_URL, failure: FRONTEND_URL, pending: FRONTEND_URL },
                 redirect_urls: { success: FRONTEND_URL, failure: FRONTEND_URL, pending: FRONTEND_URL },
                 notification_url: `${BACKEND_URL}/api/webhook/mp`,
